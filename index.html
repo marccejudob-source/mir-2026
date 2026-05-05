@@ -202,17 +202,9 @@
 
     <script>
         // ==================== CONFIG ====================
-        // CORS Proxy for GitHub Pages (needed because API blocks cross-origin requests)
-        const CORS_PROXY = 'https://corsproxy.io/?url=';
-        const API_RAW = 'https://fse.sanidad.gob.es';
-        
-        function proxyUrl(url) { return CORS_PROXY + encodeURIComponent(url); }
-        
-        const TOKEN_PATH = `${API_RAW}/hera/oauth/api/v1/oidc/token`;
-        const PLAZAS_PATH = `${API_RAW}/hera/api/datos/convocatoria/getPlazasVacantes`;
-        const ADJUDICADAS_PATH = `${API_RAW}/hera/api/datos/convocatoria/getPlazasAdjudicadas`;
-        // URL del historial acumulado (GitHub Pages sirve archivos del repo)
+        // All data comes from static JSON files updated every 2h by GitHub Actions
         const HISTORIAL_URL = './data/adjudicadas_historial.json';
+        const VACANTES_URL = './data/vacantes.json';
 
         const CITY_COORDS = {
             'MADRID': [40.4168, -3.7038], 'BARCELONA': [41.3874, 2.1686],
@@ -250,7 +242,7 @@
             'MARBELLA': [36.5105, -4.8826],
         };
 
-        let token = null, vacantesData = [], adjudicadasData = [], map = null, markersLayer = null;
+        let vacantesData = [], adjudicadasData = [], map = null, markersLayer = null;
 
         function initMap() {
             map = L.map('map', { center: [40.0, -3.5], zoom: 6, zoomControl: false, attributionControl: false });
@@ -259,82 +251,24 @@
             markersLayer = L.layerGroup().addTo(map);
         }
 
-        function generateUUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-                const r = Math.random() * 16 | 0;
-                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-            });
-        }
-
-        async function getToken() {
-            const r = await fetch(proxyUrl(TOKEN_PATH), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': generateUUID() },
-                body: JSON.stringify({ client_id: 'FSEWEB', username: '', password: '', state: generateUUID(), grant_type: 'client_no_identification' })
-            });
-            const d = await r.json();
-            token = d.token;
-        }
-
-        async function fetchVacantes() {
-            if (!token) await getToken();
-            let all = [], page = 0, totalPages = 1;
-            while (page < totalPages) {
-                const url = `${PLAZAS_PATH}?page=${page}&size=500`;
-                const r = await fetch(proxyUrl(url), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'X-XSRF-TOKEN': generateUUID() },
-                    body: JSON.stringify({})
-                });
-                if (r.status === 403) { token = null; await getToken(); return fetchVacantes(); }
-                const d = await r.json();
-                totalPages = d.totalPages;
-                all = all.concat(d.data || []);
-                page++;
-            }
-            return all.filter(p => p.codigoTitulacion === 'M');
-        }
-
-        async function fetchHistorial() {
-            try {
-                const r = await fetch(HISTORIAL_URL + '?t=' + Date.now());
-                if (r.ok) {
-                    const data = await r.json();
-                    return data.adjudicaciones || [];
-                }
-            } catch(e) {}
-            return [];
-        }
-
-        async function fetchAdjudicadasLive() {
-            if (!token) await getToken();
-            const url = `${ADJUDICADAS_PATH}?idTitulo=M`;
-            const r = await fetch(proxyUrl(url), {
-                headers: { 'Authorization': `Bearer ${token}`, 'X-XSRF-TOKEN': generateUUID() }
-            });
-            if (r.status === 403) { token = null; await getToken(); return fetchAdjudicadasLive(); }
-            return await r.json();
-        }
-
         async function refreshData() {
-            setLoading('Descargando datos...');
+            setLoading('Cargando datos...');
             try {
-                // Fetch vacantes + historial acumulado + live adjudicadas
-                const [vac, historial, live] = await Promise.all([
-                    fetchVacantes(),
-                    fetchHistorial(),
-                    fetchAdjudicadasLive()
+                // Load both JSON files from the repo (updated every 2h by GitHub Actions)
+                const [vacRes, adjRes] = await Promise.all([
+                    fetch(VACANTES_URL + '?t=' + Date.now()),
+                    fetch(HISTORIAL_URL + '?t=' + Date.now())
                 ]);
 
-                vacantesData = vac;
+                if (!vacRes.ok || !adjRes.ok) throw new Error('No se pudieron cargar los datos');
 
-                // Merge historial + live
-                const adjMap = {};
-                historial.forEach(a => { adjMap[a.numorden] = a; });
-                live.forEach(a => { adjMap[a.numorden] = a; });
-                adjudicadasData = Object.values(adjMap).sort((a,b) => a.numorden - b.numorden);
+                const vacData = await vacRes.json();
+                const adjData = await adjRes.json();
 
-                // Add exhausted specialties
+                vacantesData = vacData.vacantes || [];
+                adjudicadasData = adjData.adjudicaciones || [];
+
+                // Add exhausted specialties from adjudicadas
                 const adjGroups = {};
                 adjudicadasData.forEach(a => {
                     const key = `${a.descentro}|${a.codespec}`;
@@ -357,7 +291,8 @@
 
                 document.getElementById('totalPlazas').textContent = vacantesData.reduce((s, d) => s + d.numeroPlazas, 0).toLocaleString('es-ES');
                 populateFilters();
-                setLoading(`✓ ${vacantesData.length} registros · ${adjudicadasData.length} adjudicaciones acumuladas`);
+                const lastUpdate = vacData.lastUpdate ? new Date(vacData.lastUpdate).toLocaleString('es-ES') : '?';
+                setLoading(`✓ ${vacantesData.length} registros · ${adjudicadasData.length} adjudicaciones · Actualizado: ${lastUpdate}`);
             } catch(e) {
                 setLoading('Error: ' + e.message);
             }
