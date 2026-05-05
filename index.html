@@ -202,11 +202,15 @@
 
     <script>
         // ==================== CONFIG ====================
-        // API del Ministerio (llamada directa - sin CORS issues desde GitHub Pages)
-        const API_BASE = 'https://fse.sanidad.gob.es';
-        const TOKEN_URL = `${API_BASE}/hera/oauth/api/v1/oidc/token`;
-        const PLAZAS_URL = `${API_BASE}/hera/api/datos/convocatoria/getPlazasVacantes`;
-        const ADJUDICADAS_URL = `${API_BASE}/hera/api/datos/convocatoria/getPlazasAdjudicadas`;
+        // CORS Proxy for GitHub Pages (needed because API blocks cross-origin requests)
+        const CORS_PROXY = 'https://corsproxy.io/?url=';
+        const API_RAW = 'https://fse.sanidad.gob.es';
+        
+        function proxyUrl(url) { return CORS_PROXY + encodeURIComponent(url); }
+        
+        const TOKEN_PATH = `${API_RAW}/hera/oauth/api/v1/oidc/token`;
+        const PLAZAS_PATH = `${API_RAW}/hera/api/datos/convocatoria/getPlazasVacantes`;
+        const ADJUDICADAS_PATH = `${API_RAW}/hera/api/datos/convocatoria/getPlazasAdjudicadas`;
         // URL del historial acumulado (GitHub Pages sirve archivos del repo)
         const HISTORIAL_URL = './data/adjudicadas_historial.json';
 
@@ -263,7 +267,7 @@
         }
 
         async function getToken() {
-            const r = await fetch(TOKEN_URL, {
+            const r = await fetch(proxyUrl(TOKEN_PATH), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': generateUUID() },
                 body: JSON.stringify({ client_id: 'FSEWEB', username: '', password: '', state: generateUUID(), grant_type: 'client_no_identification' })
@@ -276,7 +280,8 @@
             if (!token) await getToken();
             let all = [], page = 0, totalPages = 1;
             while (page < totalPages) {
-                const r = await fetch(`${PLAZAS_URL}?page=${page}&size=500`, {
+                const url = `${PLAZAS_PATH}?page=${page}&size=500`;
+                const r = await fetch(proxyUrl(url), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'X-XSRF-TOKEN': generateUUID() },
                     body: JSON.stringify({})
@@ -303,7 +308,8 @@
 
         async function fetchAdjudicadasLive() {
             if (!token) await getToken();
-            const r = await fetch(`${ADJUDICADAS_URL}?idTitulo=M`, {
+            const url = `${ADJUDICADAS_PATH}?idTitulo=M`;
+            const r = await fetch(proxyUrl(url), {
                 headers: { 'Authorization': `Bearer ${token}`, 'X-XSRF-TOKEN': generateUUID() }
             });
             if (r.status === 403) { token = null; await getToken(); return fetchAdjudicadasLive(); }
