@@ -2,7 +2,9 @@ name: Recoger Adjudicaciones MIR
 
 on:
   schedule:
+    # Cada 2 horas
     - cron: '0 */2 * * *'
+  # También permitir ejecución manual
   workflow_dispatch:
 
 permissions:
@@ -27,6 +29,6 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/adjudicadas_historial.json
-          git diff --staged --quiet || git commit -m "📊 Actualización adjudicaciones $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add data/adjudicadas_historial.json data/vacantes.json
+          git diff --staged --quiet || git commit -m "📊 Actualización datos $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
