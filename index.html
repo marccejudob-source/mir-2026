@@ -549,13 +549,14 @@
                 Object.values(adjGroups).forEach(a => {
                     const exists = vacantesData.some(v =>
                         v.codigoEspecialidad === a.codespec &&
-                        v.centro && a.descentro &&
-                        (v.centro.includes(a.descentro.substring(0, 15)) || a.descentro.includes((v.centro || '').substring(0, 15)))
+                        ((v.codigoCentro && a.codcenho && v.codigoCentro === a.codcenho) ||
+                         (v.centro && a.descentro && v.centro === a.descentro))
                     );
                     if (!exists && a.descentro && a.desespec) {
                         vacantesData.push({
                             centro: a.descentro, localidad: a.localich || '',
                             especialidad: a.desespec, codigoEspecialidad: a.codespec,
+                            codigoCentro: a.codcenho,
                             codigoTitulacion: 'M', numeroPlazas: 0
                         });
                     }
@@ -682,7 +683,14 @@
             document.getElementById('infoPanelTitle').textContent = `🏥 ${group.centro}`;
             let html = `<div style="font-size:0.75rem;color:#7b8fa3;margin-bottom:10px;">${group.localidad}</div>`;
             group.plazas.forEach(plaza => {
-                const adj = adjudicadasData.filter(a => a.descentro && a.descentro.includes(group.centro.substring(0,20)) && a.codespec === plaza.codigoEspecialidad);
+                // Match by codigoCentro/codcenho (numeric ID) for exact matching
+                const adj = adjudicadasData.filter(a => {
+                    if (a.codespec !== plaza.codigoEspecialidad) return false;
+                    // Use numeric center code if available (most reliable)
+                    if (plaza.codigoCentro && a.codcenho) return a.codcenho === plaza.codigoCentro;
+                    // Fallback: exact name match
+                    return a.descentro && a.descentro === group.centro;
+                });
                 const total = plaza.numeroPlazas + adj.length;
                 const pct = total > 0 ? (adj.length / total * 100) : 0;
                 html += `<div class="info-item">
