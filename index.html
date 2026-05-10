@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -99,6 +98,86 @@
             font-size: 0.8rem; font-family: inherit; transition: all 0.2s;
         }
         .btn-refresh-data:hover { border-color: #64b5f6; color: #ffffff; }
+        /* Tab system */
+        .panel-tabs {
+            display: flex; border-bottom: 1px solid rgba(30, 58, 95, 0.4);
+            background: rgba(17, 34, 64, 0.4);
+        }
+        .panel-tab {
+            flex: 1; padding: 10px 8px; text-align: center; font-size: 0.78rem;
+            font-weight: 600; color: #7b8fa3; cursor: pointer; border: none;
+            background: transparent; font-family: inherit; transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        .panel-tab:hover { color: #a8c4db; background: rgba(30, 136, 229, 0.05); }
+        .panel-tab.active { color: #64b5f6; border-bottom-color: #1e88e5; background: rgba(30, 136, 229, 0.08); }
+        .tab-content { display: none; flex: 1; overflow-y: auto; padding: 14px; }
+        .tab-content.active { display: block; }
+        /* Favorites styles */
+        .fav-add-btn {
+            width: 100%; padding: 10px; background: rgba(102, 187, 106, 0.08);
+            border: 1px dashed rgba(102, 187, 106, 0.4); color: #66bb6a;
+            border-radius: 10px; cursor: pointer; font-size: 0.8rem;
+            font-family: inherit; font-weight: 500; transition: all 0.2s; margin-bottom: 12px;
+        }
+        .fav-add-btn:hover { background: rgba(102, 187, 106, 0.15); border-color: #66bb6a; }
+        .fav-form {
+            background: rgba(8, 21, 37, 0.8); border: 1px solid rgba(30, 58, 95, 0.5);
+            border-radius: 12px; padding: 12px; margin-bottom: 14px;
+        }
+        .fav-form label { font-size: 0.7rem; color: #7b8fa3; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; margin-top: 8px; }
+        .fav-form label:first-child { margin-top: 0; }
+        .fav-form select {
+            width: 100%; background: rgba(15, 35, 55, 0.9); border: 1px solid rgba(30, 58, 95, 0.6);
+            color: #e6edf3; padding: 8px 10px; border-radius: 8px; font-size: 0.78rem;
+            font-family: inherit; outline: none; cursor: pointer;
+        }
+        .fav-form select:focus { border-color: #1e88e5; }
+        .fav-form select[multiple] { height: 100px; }
+        .fav-form-actions { display: flex; gap: 6px; margin-top: 10px; }
+        .fav-form-actions button {
+            flex: 1; padding: 8px; border-radius: 8px; font-size: 0.75rem;
+            font-family: inherit; font-weight: 600; cursor: pointer; border: none;
+        }
+        .fav-save { background: linear-gradient(135deg, #66bb6a, #43a047); color: white; }
+        .fav-save:hover { box-shadow: 0 2px 10px rgba(102, 187, 106, 0.3); }
+        .fav-cancel { background: rgba(239, 83, 80, 0.1); border: 1px solid rgba(239, 83, 80, 0.3) !important; color: #ef5350; }
+        .fav-esp-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 10px; margin-bottom: 6px; border-radius: 8px;
+            background: rgba(30, 136, 229, 0.08); border-left: 3px solid #1e88e5;
+        }
+        .fav-esp-header .esp-name { font-size: 0.8rem; font-weight: 700; color: #64b5f6; }
+        .fav-city-header {
+            font-size: 0.7rem; color: #7b8fa3; font-weight: 600; padding: 4px 10px;
+            margin-top: 6px; text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .fav-hosp-row {
+            display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+            border-radius: 6px; margin-bottom: 3px; background: rgba(8, 21, 37, 0.5);
+        }
+        .fav-hosp-row .hosp-name {
+            flex: 1; font-size: 0.72rem; color: #c8d8e8; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .fav-hosp-row .hosp-bar { width: 60px; height: 5px; background: #1e3a5f; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+        .fav-hosp-row .hosp-bar-fill { height: 100%; border-radius: 3px; }
+        .fav-hosp-row .hosp-stats { font-size: 0.65rem; color: #7b8fa3; white-space: nowrap; min-width: 55px; text-align: right; }
+        .fav-status-icon { font-size: 0.7rem; flex-shrink: 0; }
+        .fav-summary {
+            background: rgba(30, 136, 229, 0.06); border: 1px solid rgba(30, 136, 229, 0.2);
+            border-radius: 10px; padding: 10px 12px; margin-top: 12px;
+        }
+        .fav-summary .summary-title { font-size: 0.7rem; color: #7b8fa3; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .fav-summary .summary-num { font-size: 1.1rem; font-weight: 700; color: #66bb6a; }
+        .fav-summary .summary-detail { font-size: 0.72rem; color: #a8c4db; }
+        .fav-delete-group {
+            background: none; border: none; color: #ef5350; cursor: pointer;
+            font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; opacity: 0.6;
+        }
+        .fav-delete-group:hover { opacity: 1; background: rgba(239, 83, 80, 0.1); }
+        .fav-empty { text-align: center; padding: 40px 20px; color: #3a5a7a; font-size: 0.85rem; }
+        .fav-empty .fav-empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
         .info-panel {
             position: fixed; top: 50%; right: 360px; transform: translateY(-50%);
             width: 340px; max-height: 70vh; overflow-y: auto; padding: 20px;
@@ -208,7 +287,11 @@
     <div id="map"></div>
     <div class="panel">
         <div class="panel-header"><h2>❤️ Elección MIR 2026 Lou</h2></div>
-        <div class="panel-filters">
+        <div class="panel-tabs">
+            <button class="panel-tab active" onclick="switchTab('map')">🗺️ Mapa</button>
+            <button class="panel-tab" onclick="switchTab('favs')">⭐ Favoritas</button>
+        </div>
+        <div class="tab-content active" id="tabMap" style="padding:14px;">
             <div class="filter-group">
                 <div class="filter-group-title" onclick="toggleFilter('prov')">Localidades <span class="count" id="provCount">0</span></div>
                 <div style="display:flex;gap:6px;margin-bottom:6px;">
@@ -238,6 +321,11 @@
             </div>
             <button class="btn-apply" onclick="applyFilters()">🔍 Aplicar filtros</button>
             <button class="btn-refresh-data" onclick="refreshData()">🔄 Actualizar datos</button>
+        </div>
+        <div class="tab-content" id="tabFavs">
+            <button class="fav-add-btn" onclick="showFavForm()">+ Añadir combinación favorita</button>
+            <div id="favForm" style="display:none;"></div>
+            <div id="favResults"></div>
         </div>
     </div>
     <div class="info-panel" id="infoPanel">
@@ -734,9 +822,179 @@
         function closeInfo() { document.getElementById('infoPanel').classList.remove('active'); }
         function setLoading(t) { document.getElementById('loadingText').textContent = t; }
 
-        // Init
+        // ==================== TAB SYSTEM ====================
+        function switchTab(tab) {
+            document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            if (tab === 'map') {
+                document.querySelector('.panel-tab:nth-child(1)').classList.add('active');
+                document.getElementById('tabMap').classList.add('active');
+            } else {
+                document.querySelector('.panel-tab:nth-child(2)').classList.add('active');
+                document.getElementById('tabFavs').classList.add('active');
+                renderFavorites();
+            }
+        }
+
+        // ==================== FAVORITES SYSTEM ====================
+        let favorites = JSON.parse(localStorage.getItem('mirFavorites') || '[]');
+
+        function saveFavorites() {
+            localStorage.setItem('mirFavorites', JSON.stringify(favorites));
+        }
+
+        function showFavForm() {
+            const esps = [...new Set(vacantesData.map(d => d.especialidad))].sort();
+            const locs = [...new Set(vacantesData.map(d => d.localidad))].filter(Boolean).sort();
+            const formEl = document.getElementById('favForm');
+            formEl.style.display = 'block';
+            formEl.innerHTML = `
+                <div class="fav-form">
+                    <label>Especialidades (mantén Ctrl para varias)</label>
+                    <select id="favEspSelect" multiple>
+                        ${esps.map(e => `<option value="${e}">${e}</option>`).join('')}
+                    </select>
+                    <label>Localidades (mantén Ctrl para varias)</label>
+                    <select id="favLocSelect" multiple>
+                        ${locs.map(l => `<option value="${l}">${l}</option>`).join('')}
+                    </select>
+                    <div class="fav-form-actions">
+                        <button class="fav-save" onclick="saveFavCombo()">✓ Guardar</button>
+                        <button class="fav-cancel" onclick="hideFavForm()">Cancelar</button>
+                    </div>
+                </div>`;
+        }
+
+        function hideFavForm() {
+            document.getElementById('favForm').style.display = 'none';
+        }
+
+        function saveFavCombo() {
+            const esps = Array.from(document.getElementById('favEspSelect').selectedOptions).map(o => o.value);
+            const locs = Array.from(document.getElementById('favLocSelect').selectedOptions).map(o => o.value);
+            if (!esps.length) { alert('Selecciona al menos una especialidad'); return; }
+            if (!locs.length) { alert('Selecciona al menos una localidad'); return; }
+            favorites.push({ id: Date.now(), especialidades: esps, localidades: locs });
+            saveFavorites();
+            hideFavForm();
+            renderFavorites();
+        }
+
+        function deleteFavGroup(id) {
+            favorites = favorites.filter(f => f.id !== id);
+            saveFavorites();
+            renderFavorites();
+        }
+
+        function getAdjForPlaza(plaza, centro) {
+            return adjudicadasData.filter(a => {
+                if (a.codespec !== plaza.codigoEspecialidad) return false;
+                if (plaza.codigoCentro && a.codcenho) return a.codcenho === plaza.codigoCentro;
+                return a.descentro && a.descentro === centro;
+            });
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favResults');
+            if (!favorites.length) {
+                container.innerHTML = `<div class="fav-empty">
+                    <div class="fav-empty-icon">⭐</div>
+                    <div>No tienes favoritas todavía</div>
+                    <div style="font-size:0.75rem;margin-top:6px;color:#2a4a6a;">Pulsa "+ Añadir" para empezar</div>
+                </div>`;
+                return;
+            }
+            if (!vacantesData.length) {
+                container.innerHTML = '<div class="fav-empty"><div>Cargando datos...</div></div>';
+                return;
+            }
+
+            let html = '';
+            let globalTaken = 0, globalTotal = 0;
+
+            favorites.forEach(fav => {
+                // For each fav group, collect matching vacantes
+                const matching = vacantesData.filter(v =>
+                    fav.especialidades.includes(v.especialidad) && fav.localidades.includes(v.localidad)
+                );
+
+                // Group by especialidad, then by localidad
+                const byEsp = {};
+                fav.especialidades.forEach(esp => {
+                    byEsp[esp] = {};
+                    fav.localidades.forEach(loc => {
+                        byEsp[esp][loc] = matching.filter(v => v.especialidad === esp && v.localidad === loc);
+                    });
+                });
+
+                html += `<div style="margin-bottom:16px;">`;
+                // Delete button for entire group
+                html += `<div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+                    <button class="fav-delete-group" onclick="deleteFavGroup(${fav.id})">🗑️ Eliminar grupo</button>
+                </div>`;
+
+                for (const [esp, locs] of Object.entries(byEsp)) {
+                    html += `<div class="fav-esp-header"><span class="esp-name">${esp}</span></div>`;
+
+                    for (const [loc, plazas] of Object.entries(locs)) {
+                        if (!plazas.length) continue;
+                        html += `<div class="fav-city-header">📍 ${loc}</div>`;
+
+                        plazas.forEach(plaza => {
+                            const adj = getAdjForPlaza(plaza, plaza.centro);
+                            const taken = adj.length;
+                            const total = plaza.numeroPlazas + taken;
+                            const remaining = plaza.numeroPlazas;
+                            const pct = total > 0 ? (taken / total * 100) : 0;
+
+                            globalTaken += taken;
+                            globalTotal += total;
+
+                            // Status icon and bar color
+                            let icon, barColor;
+                            if (remaining === 0) {
+                                icon = '❌'; barColor = '#ef5350';
+                            } else if (remaining <= 2) {
+                                icon = '⚠️'; barColor = '#ffa726';
+                            } else {
+                                icon = '✅'; barColor = '#66bb6a';
+                            }
+
+                            // Shorten hospital name
+                            let shortName = plaza.centro
+                                .replace(/^(HOSPITAL |H\. |COMPLEJO HOSPITALARIO |C\.H\. )/i, '')
+                                .replace(/UNIVERSITARIO |UNIVERSITARI /gi, 'U. ')
+                                .replace(/GENERAL /gi, 'Gral. ');
+
+                            html += `<div class="fav-hosp-row">
+                                <span class="fav-status-icon">${icon}</span>
+                                <span class="hosp-name" title="${plaza.centro}">${shortName}</span>
+                                <div class="hosp-bar"><div class="hosp-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+                                <span class="hosp-stats">${taken}/${total}</span>
+                            </div>`;
+                        });
+                    }
+                }
+                html += `</div>`;
+            });
+
+            // Global summary
+            const globalRemaining = globalTotal - globalTaken;
+            html += `<div class="fav-summary">
+                <div class="summary-title">🌟 Resumen global</div>
+                <div class="summary-num">${globalRemaining} plazas disponibles</div>
+                <div class="summary-detail">${globalTaken} cogidas de ${globalTotal} totales (${globalTotal > 0 ? Math.round(globalTaken/globalTotal*100) : 0}%)</div>
+            </div>`;
+
+            container.innerHTML = html;
+        }
+
+        // ==================== INIT ====================
         initMap();
-        refreshData();
+        refreshData().then(() => {
+            // Render favorites after data loads
+            if (favorites.length) renderFavorites();
+        });
         // Auto-refresh every 2h
         setInterval(refreshData, 2 * 60 * 60 * 1000);
     </script>
