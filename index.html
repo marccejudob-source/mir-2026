@@ -352,6 +352,7 @@
         // All data comes from static JSON files updated every 2h by GitHub Actions
         const HISTORIAL_URL = './data/adjudicadas_historial.json';
         const VACANTES_URL = './data/vacantes.json';
+        const HOSP_COORDS_URL = './data/hospital_coords.json';
 
         const CITY_COORDS = {
             // CATALUÑA
@@ -602,7 +603,7 @@
             return 'Otras';
         }
 
-        let vacantesData = [], adjudicadasData = [], map = null, markersLayer = null;
+        let vacantesData = [], adjudicadasData = [], hospitalCoords = {}, map = null, markersLayer = null;
 
         function initMap() {
             map = L.map('map', { center: [40.0, -3.5], zoom: 6, zoomControl: false, attributionControl: false });
@@ -615,15 +616,19 @@
             setLoading('Cargando datos...');
             try {
                 // Load both JSON files from the repo (updated every 2h by GitHub Actions)
-                const [vacRes, adjRes] = await Promise.all([
+                const [vacRes, adjRes, coordsRes] = await Promise.all([
                     fetch(VACANTES_URL + '?t=' + Date.now()),
-                    fetch(HISTORIAL_URL + '?t=' + Date.now())
+                    fetch(HISTORIAL_URL + '?t=' + Date.now()),
+                    fetch(HOSP_COORDS_URL + '?t=' + Date.now()).catch(() => null)
                 ]);
 
                 if (!vacRes.ok || !adjRes.ok) throw new Error('No se pudieron cargar los datos');
 
                 const vacData = await vacRes.json();
                 const adjData = await adjRes.json();
+                if (coordsRes && coordsRes.ok) {
+                    try { hospitalCoords = await coordsRes.json(); } catch(e) { hospitalCoords = {}; }
+                }
 
                 vacantesData = vacData.vacantes || [];
                 adjudicadasData = adjData.adjudicaciones || [];
@@ -752,10 +757,17 @@
 
             markersLayer.clearLayers();
             Object.values(groups).forEach(g => {
-                const coords = getCityCoords(g.localidad);
-                if (!coords) return;
-                const lat = coords[0] + (Math.random() - 0.5) * 0.02;
-                const lng = coords[1] + (Math.random() - 0.5) * 0.02;
+                // Priority: 1) exact hospital coords, 2) city coords + small offset
+                let lat, lng;
+                const hc = hospitalCoords[g.centro];
+                if (hc && Array.isArray(hc) && hc.length === 2) {
+                    lat = hc[0]; lng = hc[1];
+                } else {
+                    const coords = getCityCoords(g.localidad);
+                    if (!coords) return;
+                    lat = coords[0] + (Math.random() - 0.5) * 0.015;
+                    lng = coords[1] + (Math.random() - 0.5) * 0.015;
+                }
                 const hasAvailable = g.plazas.some(p => p.numeroPlazas > 0);
                 const icon = L.divIcon({ className: '', html: `<div class="${hasAvailable ? 'red-dot' : 'gray-dot'}"></div>`, iconSize: [14,14], iconAnchor: [7,7] });
                 const marker = L.marker([lat, lng], { icon });
