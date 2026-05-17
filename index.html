@@ -1007,8 +1007,15 @@
             // Render favorites after data loads
             if (favorites.length) renderFavorites();
         });
-        // Auto-refresh every 2h
-        setInterval(refreshData, 2 * 60 * 60 * 1000);
+        // Auto-refresh: 15 min (9h-20h España) / 3h (resto)
+        function getRefreshInterval() {
+            const hour = new Date().getHours(); // hora local del usuario
+            return (hour >= 9 && hour < 20) ? 15 * 60 * 1000 : 3 * 60 * 60 * 1000;
+        }
+        function scheduleRefresh() {
+            setTimeout(() => { refreshData().then(scheduleRefresh); }, getRefreshInterval());
+        }
+        scheduleRefresh();
     </script>
 </body>
 </html>
